@@ -1,6 +1,16 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
 import os
+import argparse
+
+# Set up command line argument parser
+parser = argparse.ArgumentParser(description='Display a full-screen clock on Raspberry Pi')
+parser.add_argument('--format', choices=['12', '24'], default='24',
+                   help='Clock format: 12 for 12-hour, 24 for 24-hour (default: 24)')
+args = parser.parse_args()
+
+# Clock format based on command line argument
+clock_format = "%I:%M %p" if args.format == '12' else "%H:%M"
 
 font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 width, height = 1280, 720  # Matches hdmi_mode=4
@@ -8,10 +18,11 @@ base_img = Image.new('RGB', (width, height), color='black')
 last_date = ""
 last_time = ""
 use_first = True
+tmp_dir = "/tmp"  # Define the temporary directory
 
 while True:
     current_date = time.strftime("%a, %B %d")  # e.g., "Mon, March 17"
-    current_time = time.strftime("%H:%M")      # e.g., "14:35"
+    current_time = time.strftime(clock_format) # e.g., "2:35 PM" or "14:35"
 
     if current_date != last_date or current_time != last_time:
         img = base_img.copy()
@@ -27,7 +38,7 @@ while True:
         draw.text(date_pos, current_date, font=date_font, fill='white')
         draw.text(time_pos, current_time, font=time_font, fill='white')
         
-        filename = 'clock1.png' if use_first else 'clock2.png'
+        filename = os.path.join(tmp_dir, 'clock1.png') if use_first else os.path.join(tmp_dir, 'clock2.png')
         img.save(filename)
         os.system(f'sudo killall fbi; sudo timeout 0.5 fbi -T 1 -noverbose -a {filename} > /dev/null 2>&1 &')
         use_first = not use_first
