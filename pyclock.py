@@ -46,4 +46,4 @@ while True:
         last_time = current_time
         # print(f"Updated: {filename}")
 
-    time.sleep(60)  # Update every minute
+    time.sleep(17)  # Update every 17 seconds
