@@ -44,6 +44,6 @@ while True:
         use_first = not use_first
         last_date = current_date
         last_time = current_time
-        print(f"Updated: {filename}")
+        # print(f"Updated: {filename}")
 
     time.sleep(60)  # Update every minute
